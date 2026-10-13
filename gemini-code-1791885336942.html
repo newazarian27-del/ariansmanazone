@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arian's Workspace | Black Clover Magic Knight & Productivity OS</title>
+
+  <!-- Google Fonts: Cinzel, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            cinzel: ['Cinzel', 'serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: '#08090d',
+            clover: {
+              gold: '#ffb703',
+              crimson: '#e63946',
+              emerald: '#2a9d8f',
+              purple: '#8b5cf6',
+              card: '#11131c',
+              border: '#1e2235'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Alpine.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <style>
+    :root {
+      --color-primary: #e63946;
+      --color-primary-glow: rgba(230, 57, 70, 0.35);
+      --color-gold: #ffb703;
+      --color-mana: #2a9d8f;
+    }
+
+    body {
+      background-color: #08090d;
+      color: #e2e8f0;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(230, 57, 70, 0.03) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(42, 157, 143, 0.03) 0%, transparent 45%);
+    }
+
+    #bg-particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #2a2e45;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: var(--color-primary);
+    }
+
+    .grimoire-card {
+      background: linear-gradient(145deg, #12141e 0%, #0d0e15 100%);
+      border: 1px solid #1e2235;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .grimoire-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .text-pop {
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+
+<body x-data="blackCloverApp()" x-init="initApp()" class="font-sans min-h-screen flex flex-col antialiased selection:bg-rose-600 selection:text-white transition-colors duration-200">
+
+  <!-- BACKGROUND ANIMATED PARTICLES CANVAS -->
+  <canvas id="bg-particles-canvas"></canvas>
+
+  <div class="flex h-screen overflow-hidden relative z-10">
+    
+    <!-- Sidebar: Magic Knight Command Center -->
+    <aside class="w-64 bg-[#0d0e15]/95 backdrop-blur-md border-r border-[#1e2235] flex flex-col justify-between transition-all duration-300 z-30 shrink-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0 fixed md:relative'">
+      <div>
+        <!-- App Logo & Emblem -->
+        <div class="h-20 flex items-center justify-between px-5 border-b border-[#1e2235] bg-gradient-to-r from-rose-950/20 via-transparent to-amber-950/10">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-600 via-amber-500 to-rose-900 flex items-center justify-center text-white shadow-lg border border-amber-400/40 shrink-0">
+              <i class="fa-solid fa-clover text-amber-300 text-lg"></i>
+            </div>
+            <div>
+              <span class="font-cinzel font-black text-base tracking-wider text-amber-400 block leading-none">ARIAN'S</span>
+              <span class="font-cinzel font-bold text-[10px] tracking-widest text-rose-400 block mt-1">BLACK CLOVER OS</span>
+            </div>
+          </div>
+          <button @click="sidebarOpen = false" class="md:hidden text-gray-400 hover:text-white">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Magic Knight Profile Card in Sidebar -->
+        <div class="p-3 mx-3 my-4 bg-[#141724] hover:bg-[#1a1e30] rounded-2xl border border-[#23283e] flex items-center gap-3 relative cursor-pointer group transition-all">
+          <div class="relative w-11 h-11 rounded-xl overflow-hidden border border-amber-400/50 shrink-0 bg-[#090a0f] flex items-center justify-center">
+            <template x-if="profile.avatar">
+              <img :src="profile.avatar" class="w-full h-full object-cover" alt="Profile" @error="profile.avatar = ''">
+            </template>
+            <template x-if="!profile.avatar">
+              <i class="fa-solid fa-user-shield text-amber-400 text-lg"></i>
+            </template>
+          </div>
+          <div class="overflow-hidden z-10 flex-1">
+            <h4 class="font-cinzel font-bold text-xs truncate text-amber-300" x-text="profile.name || 'Arian'"></h4>
+            <p class="text-[10px] text-rose-400 font-medium truncate flex items-center gap-1">
+              <i class="fa-solid fa-shield-halved text-[9px]"></i>
+              <span x-text="profile.squad"></span>
+            </p>
+          </div>
+          <i class="fa-solid fa-gear text-xs text-gray-500 group-hover:text-amber-400 transition-colors"></i>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="px-3 space-y-1 custom-scrollbar overflow-y-auto max-h-[calc(100vh-270px)]">
+          <template x-for="nav in navItems" :key="nav.id">
+            <button @click="currentTab = nav.id; if(window.innerWidth < 768) sidebarOpen = false;" 
+                    class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200"
+                    :class="currentTab === nav.id ? 'bg-gradient-to-r from-rose-950/60 to-amber-950/40 text-amber-300 border border-rose-500/30 shadow-md' : 'text-gray-400 hover:bg-[#151826] hover:text-gray-200'">
+              <i :class="nav.faIcon" class="w-4 text-center text-sm"></i>
+              <span x-text="nav.label"></span>
+              <span x-show="nav.id === 'self_improvement'" class="ml-auto px-1.5 py-0.5 text-[9px] font-bold rounded bg-emerald-950 text-emerald-300 border border-emerald-700/50" x-text="getSalahCount() + '/5'"></span>
+            </button>
+          </template>
+        </nav>
+      </div>
+
+      <!-- Footer Streak Gauge -->
+      <div class="p-4 border-t border-[#1e2235] bg-[#0a0b10]">
+        <div class="flex items-center justify-between text-xs text-gray-400 mb-1.5 font-mono">
+          <span class="flex items-center gap-1.5 text-amber-400 text-[11px]">
+            <i class="fa-solid fa-bolt text-rose-500"></i> NoFap Goal
+          </span>
+          <span class="font-bold text-amber-300 text-[11px]" x-text="selfImprovement.nofapStreak + '/' + selfImprovement.nofapTarget + 'd'"></span>
+        </div>
+        <div class="w-full bg-[#151826] h-2 rounded-full overflow-hidden border border-[#23283e]">
+          <div class="bg-gradient-to-r from-rose-600 via-amber-500 to-emerald-400 h-full rounded-full transition-all duration-500" :style="`width: ${Math.min((selfImprovement.nofapStreak / selfImprovement.nofapTarget) * 100, 100)}%`"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile Overlay -->
+    <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-20 md:hidden"></div>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+      <!-- Command Bar Header -->
+      <header class="h-16 bg-[#0d0e15]/90 backdrop-blur-md border-b border-[#1e2235] px-6 flex items-center justify-between shrink-0 z-10">
+        <div class="flex items-center gap-4">
+          <button @click="sidebarOpen = !sidebarOpen" class="md:hidden p-2 rounded-lg text-gray-400 hover:bg-[#181b2a]">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-gem text-amber-400 text-sm"></i>
+            <h1 class="text-base font-cinzel font-extrabold tracking-wider text-amber-300 uppercase" x-text="navItems.find(i => i.id === currentTab)?.label || currentTab"></h1>
+          </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="flex items-center gap-3">
+          
+          <!-- Particle Canvas Toggle -->
+          <button @click="toggleParticles()" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#12141f] border border-[#22273c] hover:border-amber-400/50 rounded-xl text-xs font-mono text-gray-300 transition-all">
+            <i class="fa-solid fa-sparkles text-amber-400"></i>
+            <span class="text-[10px] uppercase font-bold" x-text="particlesActive ? 'Mana Particles: ON' : 'Mana Particles: OFF'"></span>
+          </button>
+
+          <!-- Live Total Focus / Mana Spent Counter -->
+          <div class="flex items-center gap-2 px-3.5 py-1.5 bg-[#12141f] border border-[#22273c] rounded-xl text-xs font-mono text-gray-300 shadow-sm">
+            <i class="fa-solid fa-stopwatch text-emerald-400"></i>
+            <span class="text-[10px] text-gray-400 uppercase tracking-wider hidden sm:inline">Total Mana Spent:</span>
+            <span class="font-bold text-amber-300" x-text="formatTotalTime(totalFocusSeconds)">0h 0m</span>
+          </div>
+
+          <!-- New Mission Trigger -->
+          <button @click="openTaskModal = true" class="flex items-center gap-2 px-4 py-2 text-xs font-cinzel font-bold text-white bg-gradient-to-r from-rose-700 to-rose-900 hover:from-rose-600 hover:to-rose-800 rounded-xl border border-rose-500/40 shadow-lg transition-all">
+            <i class="fa-solid fa-plus"></i>
+            <span class="hidden sm:inline">New Mission</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-6 custom-scrollbar">
+        
+        <!-- DASHBOARD TAB -->
+        <div x-show="currentTab === 'dashboard'" x-cloak class="space-y-6">
+          
+          <!-- CLEAN MODERN BANNER -->
+          <div class="relative grimoire-card rounded-2xl border border-[#22273c] bg-[#0c0d14] overflow-hidden min-h-[140px] flex items-center justify-between p-6 sm:p-8">
+            <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none flex items-center justify-end pr-4 sm:pr-12">
+              <template x-if="bannerImage">
+                <img :src="bannerImage" alt="Background Character" class="h-full object-contain opacity-40 mix-blend-lighten filter brightness-110 contrast-125 transition-all">
+              </template>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0c0d14] via-[#0c0d14]/90 to-transparent z-0"></div>
+
+            <div class="relative z-10 space-y-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-widest text-gray-300 bg-[#171a29] border border-[#292f48]">
+                  SEASON FOCUS
+                </span>
+                <span class="text-xs font-mono text-gray-500">•</span>
+                <span class="text-xs font-mono text-gray-400 tracking-wider uppercase">HSC ARC 2026</span>
+              </div>
+
+              <h2 class="text-2xl sm:text-4xl md:text-5xl font-cinzel font-black tracking-widest text-white uppercase text-pop">
+                WINTER ARC <span class="text-gray-500 font-light mx-1">X</span> BLACK CLOVER
+              </h2>
+
+              <p class="text-xs font-mono text-gray-400 max-w-lg pt-1">
+                Maintain unshakeable discipline, fulfill your daily spiritual duties, and surpass your limits in silence.
+              </p>
+            </div>
+
+            <div class="relative z-10 shrink-0 self-start sm:self-center">
+              <label class="px-3 py-1.5 rounded-xl border border-[#262b40] bg-[#121522] hover:bg-[#1a1f33] text-gray-300 hover:text-white text-xs font-mono cursor-pointer flex items-center gap-2 transition-all shadow-md">
+                <i class="fa-solid fa-image text-xs text-amber-400"></i>
+                <span x-text="bannerImage ? 'Change Image' : 'Add Image Behind'"></span>
+                <input type="file" accept="image/*" @change="handleBannerUpload($event)" class="hidden">
+              </label>
+              <button x-show="bannerImage" @click="bannerImage = ''; saveData();" class="block mt-1 text-[10px] font-mono text-gray-500 hover:text-rose-400 text-right w-full">
+                Remove
+              </button>
+            </div>
+          </div>
+
+          <!-- Key Metrics -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="grimoire-card p-5 rounded-2xl relative">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-[10px] font-cinzel font-bold uppercase tracking-wider text-rose-400">Total Missions</p>
+                  <h3 class="text-3xl font-mono font-extrabold text-white mt-1" x-text="tasks.length">0</h3>
+                </div>
+                <div class="p-3 bg-rose-950/50 border border-rose-800/40 rounded-xl text-rose-400">
+                  <i class="fa-solid fa-scroll text-xl"></i>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400 mt-3 font-mono"><span class="text-emerald-400 font-semibold" x-text="tasks.filter(t => t.status === 'Completed').length">0</span> Completed</p>
+            </div>
+
+            <div class="grimoire-card p-5 rounded-2xl relative">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-[10px] font-cinzel font-bold uppercase tracking-wider text-emerald-400">Total Mana Time</p>
+                  <h3 class="text-2xl font-mono font-extrabold text-white mt-1" x-text="formatTotalTime(totalFocusSeconds)">0h 0m</h3>
+                </div>
+                <div class="p-3 bg-emerald-950/50 border border-emerald-800/40 rounded-xl text-emerald-400">
+                  <i class="fa-solid fa-clock text-xl"></i>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400 mt-3 font-mono">Logged Focus Time</p>
+            </div>
+
+            <div class="grimoire-card p-5 rounded-2xl relative">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-[10px] font-cinzel font-bold uppercase tracking-wider text-amber-400">Mastery Rate</p>
+                  <h3 class="text-3xl font-mono font-extrabold text-white mt-1" x-text="getCompletionRate() + '%'">0%</h3>
+                </div>
+                <div class="p-3 bg-amber-950/50 border border-amber-800/40 rounded-xl text-amber-400">
+                  <i class="fa-solid fa-crown text-xl"></i>
+                </div>
+              </div>
+              <div class="w-full bg-[#171a28] h-1.5 rounded-full mt-3 overflow-hidden border border-[#262b42]">
+                <div class="bg-gradient-to-r from-amber-500 to-emerald-400 h-full rounded-full transition-all duration-500" :style="`width: ${getCompletionRate()}%`"></div>
+              </div>
+            </div>
+
+            <div class="grimoire-card p-5 rounded-2xl relative">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-[10px] font-cinzel font-bold uppercase tracking-wider text-emerald-400">Salah Track</p>
+                  <h3 class="text-3xl font-mono font-extrabold text-white mt-1" x-text="getSalahCount() + '/5'">0/5</h3>
+                </div>
+                <div class="p-3 bg-emerald-950/50 border border-emerald-800/40 rounded-xl text-emerald-400">
+                  <i class="fa-solid fa-kaaba text-xl"></i>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400 mt-3 font-mono">Daily Spiritual Shield</p>
+            </div>
+
+            <div class="grimoire-card p-5 rounded-2xl relative">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-[10px] font-cinzel font-bold uppercase tracking-wider text-purple-400">NoFap Streak</p>
+                  <h3 class="text-3xl font-mono font-extrabold text-white mt-1" x-text="selfImprovement.nofapStreak + ' Days'">0 Days</h3>
+                </div>
+                <div class="p-3 bg-purple-950/50 border border-purple-800/40 rounded-xl text-purple-400">
+                  <i class="fa-solid fa-fire text-xl"></i>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400 mt-3 font-mono">Target: <span class="text-amber-400" x-text="selfImprovement.nofapTarget">90</span> Days</p>
+            </div>
+          </div>
+
+          <!-- Active Missions & Daily Goals -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 grimoire-card p-6 rounded-2xl space-y-4">
+              <div class="flex items-center justify-between border-b border-[#212538] pb-3">
+                <h3 class="font-cinzel font-bold text-amber-300 text-sm flex items-center gap-2">
+                  <i class="fa-solid fa-fire text-rose-500"></i> Active Magic Missions
+                </h3>
+                <span class="text-xs text-gray-400 font-mono" x-text="tasks.length + ' Active Tasks'"></span>
+              </div>
+
+              <div class="space-y-3">
+                <template x-for="task in tasks" :key="task.id">
+                  <div class="p-4 rounded-xl bg-[#141724] border flex items-center justify-between hover:border-amber-500/40 transition-all"
+                       :class="{
+                         'border-rose-500/50 bg-rose-950/10': task.priority === 'High',
+                         'border-amber-500/40 bg-amber-950/10': task.priority === 'Medium',
+                         'border-[#23283e]': task.priority === 'Low' || !task.priority
+                       }">
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h4 class="text-sm font-bold text-white font-mono" x-text="task.title"></h4>
+                        <span class="text-[9px] font-mono px-2 py-0.5 rounded font-bold uppercase"
+                              :class="{
+                                'bg-rose-950 text-rose-400 border border-rose-800/60': task.priority === 'High',
+                                'bg-amber-950 text-amber-400 border border-amber-800/60': task.priority === 'Medium',
+                                'bg-emerald-950 text-emerald-400 border border-emerald-800/60': task.priority === 'Low' || !task.priority
+                              }" x-text="task.priority || 'Low'"></span>
+                      </div>
+                      <p class="text-xs text-gray-400 mt-1" x-text="task.description"></p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1c2133] text-amber-300 border border-[#2b324c]" x-text="task.status"></span>
+                      <button @click="toggleTaskStatus(task.id)" class="text-xs text-emerald-400 hover:text-emerald-300 font-mono">
+                        <i class="fa-solid fa-check"></i>
+                      </button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Daily Goals Card -->
+            <div class="grimoire-card p-6 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="font-cinzel font-bold text-amber-300 text-sm">Daily Magic Duties</h3>
+                  <span class="text-xs text-emerald-400 font-mono font-bold" x-text="getTodayGoalProgress() + '% Done'">0% Done</span>
+                </div>
+
+                <div class="space-y-2.5">
+                  <template x-for="goal in dailyGoals" :key="goal.id">
+                    <div @click="toggleGoal(goal.id)" class="flex items-center justify-between p-3 rounded-xl bg-[#141724] border border-[#23283e] cursor-pointer hover:border-amber-500/40 transition-all">
+                      <div class="flex items-center gap-3">
+                        <input type="checkbox" :checked="goal.completed" class="w-4 h-4 rounded text-rose-600 bg-[#0d0e15] border-[#2c324d]">
+                        <span class="text-xs font-medium" :class="goal.completed ? 'line-through text-gray-500' : 'text-gray-200'" x-text="goal.title"></span>
+                      </div>
+                      <span class="text-[10px] px-2 py-0.5 rounded bg-[#1d2235] text-amber-400 font-mono" x-text="goal.category"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              <button @click="currentTab = 'tasks'" class="w-full mt-4 py-2.5 text-center text-xs font-cinzel font-bold text-amber-400 hover:text-amber-300 bg-[#141724] hover:bg-[#1a1e30] border border-[#23283e] rounded-xl transition-all">
+                Manage All Missions &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- GALLERY -->
+          <div class="grimoire-card p-6 rounded-2xl space-y-5 border-l-4 border-l-amber-500">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#212538] pb-4">
+              <div>
+                <h3 class="font-cinzel font-extrabold text-amber-300 text-base flex items-center gap-2">
+                  <i class="fa-solid fa-images text-rose-500"></i> Grimoire Visual Gallery & Motivation Board
+                </h3>
+                <p class="text-xs text-gray-400 mt-1">Collect and display your favorite Black Clover visuals, manga panels, and motivational quotes.</p>
+              </div>
+              <button @click="openGalleryModal()" class="px-4 py-2 text-xs font-cinzel font-bold bg-gradient-to-r from-amber-600 to-rose-700 hover:from-amber-500 hover:to-rose-600 text-white rounded-xl shadow-lg border border-amber-400/40 transition-all shrink-0 flex items-center gap-2">
+                <i class="fa-solid fa-image"></i>
+                <span>+ Add Image Card</span>
+              </button>
+            </div>
+
+            <template x-if="gallery.length === 0">
+              <div class="text-center py-10 border border-dashed border-[#23283e] rounded-2xl bg-[#0a0b11]">
+                <i class="fa-solid fa-photo-film text-3xl text-gray-600 mb-2"></i>
+                <p class="text-xs text-amber-400 font-cinzel font-bold">No Visual Cards Added Yet</p>
+                <p class="text-[11px] text-gray-500 mt-1 max-w-xs mx-auto">Add your favorite Black Clover panels, wallpaper URLs, or upload images with text notes.</p>
+              </div>
+            </template>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <template x-for="item in gallery" :key="item.id">
+                <div class="bg-[#121522] border border-[#22273c] hover:border-amber-500/50 rounded-2xl overflow-hidden flex flex-col justify-between group transition-all shadow-md">
+                  <div>
+                    <div class="relative h-48 w-full bg-[#090a0f] overflow-hidden border-b border-[#1f2438]">
+                      <template x-if="item.imageUrl">
+                        <img :src="item.imageUrl" :alt="item.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" @error="item.imageUrl = ''">
+                      </template>
+                      <template x-if="!item.imageUrl">
+                        <div class="w-full h-full flex flex-col items-center justify-center text-gray-600 bg-gradient-to-br from-rose-950/40 to-amber-950/20">
+                          <i class="fa-solid fa-image text-3xl mb-1 text-amber-500/40"></i>
+                          <span class="text-[10px] font-mono text-gray-500">No Image Preview</span>
+                        </div>
+                      </template>
+                      
+                      <div class="absolute top-2 right-2 flex gap-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button @click="openGalleryModal(item)" class="w-7 h-7 rounded-lg bg-black/80 text-amber-400 hover:bg-amber-500 hover:text-black flex items-center justify-center border border-amber-500/40 text-xs transition-all">
+                          <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button @click="deleteGalleryItem(item.id)" class="w-7 h-7 rounded-lg bg-black/80 text-rose-400 hover:bg-rose-600 hover:text-white flex items-center justify-center border border-rose-500/40 text-xs transition-all">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="p-4 space-y-2">
+                      <div class="flex justify-between items-start gap-2">
+                        <h4 class="font-cinzel font-bold text-sm text-amber-300 line-clamp-1" x-text="item.title || 'Untitled Card'"></h4>
+                        <span x-show="item.tag" class="px-2 py-0.5 text-[9px] font-mono rounded bg-rose-950 text-rose-300 border border-rose-800/40 shrink-0" x-text="item.tag"></span>
+                      </div>
+                      <p class="text-xs text-gray-300 italic font-serif bg-[#0a0b10] p-2.5 rounded-xl border border-[#1d2235] line-clamp-4" x-text="item.caption"></p>
+                    </div>
+                  </div>
+
+                  <div class="px-4 py-2 bg-[#0d0e15] border-t border-[#1a1e2f] flex justify-between items-center text-[10px] font-mono text-gray-500">
+                    <span>Black Clover OS Visual</span>
+                    <span x-text="item.date || 'Saved'"></span>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- NEW STUDY TIME ANALYTICS PANEL -->
+        <div x-show="currentTab === 'analytics'" x-cloak class="space-y-6">
+          <div class="grimoire-card p-6 rounded-2xl border-l-4 border-l-emerald-500 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-cinzel font-extrabold text-amber-300 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-emerald-400"></i> Study Time Analytics & Logs
+              </h2>
+              <p class="text-xs text-gray-400 mt-1 max-w-2xl">
+                Automatically tracks your daily study hours from Pomodoro focus sessions. Weekly and monthly totals update automatically based on your current calendar.
+              </p>
+            </div>
+          </div>
+
+          <!-- Overview Summary Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grimoire-card p-5 rounded-2xl">
+              <p class="text-[10px] font-cinzel font-bold uppercase tracking-wider text-emerald-400">Total Weekly Study Hours</p>
+              <h3 class="text-3xl font-mono font-extrabold text-white mt-2" x-text="getWeeklyStudyHours() + ' Hours'">0h</h3>
+              <p class="text-xs text-gray-400 mt-2 font-mono">Current Calendar Week</p>
+            </div>
+            <div class="grimoire-card p-5 rounded-2xl">
+              <p class="text-[10px] font-cinzel font-bold uppercase tracking-wider text-amber-400">Total Monthly Study Hours</p>
+              <h3 class="text-3xl font-mono font-extrabold text-white mt-2" x-text="getMonthlyStudyHours() + ' Hours'">0h</h3>
+              <p class="text-xs text-gray-400 mt-2 font-mono" x-text="getCurrentMonthName()"></p>
+            </div>
+          </div>
+
+          <!-- Daily Study Log Table/List -->
+          <div class="grimoire-card p-6 rounded-2xl space-y-4">
+            <h3 class="font-cinzel font-bold text-amber-300 text-sm flex items-center gap-2 border-b border-[#212538] pb-3">
+              <i class="fa-solid fa-calendar-days text-rose-500"></i> Daily Study Record (Last 30 Days)
+            </h3>
+
+            <div class="space-y-2.5 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
+              <template x-for="log in getRecentDailyLogs()" :key="log.date">
+                <div class="p-3.5 rounded-xl bg-[#141724] border border-[#23283e] flex items-center justify-between hover:border-amber-500/40 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-[#0a0b10] border border-[#262b42] flex items-center justify-center text-amber-400 font-mono text-xs font-bold" x-text="formatDateShort(log.date)"></div>
+                    <div>
+                      <h4 class="text-xs font-mono font-bold text-white" x-text="log.date"></h4>
+                      <p class="text-[10px] text-gray-400 font-mono" x-text="formatStudyDuration(log.seconds)"></p>
+                    </div>
+                  </div>
+                  <div class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-lg border border-emerald-800/40" x-text="(log.seconds / 3600).toFixed(1) + ' hrs'"></div>
+                </div>
+              </template>
+
+              <template x-if="Object.keys(studyLogs || {}).length === 0">
+                <div class="text-center py-8 text-gray-500 font-mono text-xs">
+                  No study sessions logged yet. Start the Mana Pomodoro timer to record study hours!
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- POMODORO TIMER PANEL -->
+        <div x-show="currentTab === 'pomodoro'" x-cloak class="space-y-6">
+          <div class="grimoire-card p-6 rounded-2xl border-l-4 border-l-amber-500 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-cinzel font-extrabold text-amber-300 flex items-center gap-2">
+                <i class="fa-solid fa-hourglass-half text-amber-400"></i> Mana Pomodoro Timer Station
+              </h2>
+              <p class="text-xs text-gray-400 mt-1 max-w-2xl">
+                Configure your deep work session durations. Every minute read here automatically logs directly into your command panel's total mana spent counter!
+              </p>
+            </div>
+            <div class="flex items-center gap-3 bg-[#0a0b10] px-4 py-2 rounded-xl border border-[#22273c]">
+              <i class="fa-solid fa-stopwatch text-emerald-400 text-sm"></i>
+              <div class="text-xs font-mono">
+                <span class="text-gray-400 block text-[10px]">Logged Mana Time:</span>
+                <span class="font-bold text-amber-300 text-sm" x-text="formatTotalTime(totalFocusSeconds)">0h 0m</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 grimoire-card p-8 rounded-2xl flex flex-col items-center justify-center space-y-6 text-center border border-[#24293f] relative overflow-hidden">
+              <div class="inline-flex bg-[#090a0f] p-1.5 rounded-2xl border border-[#22273c] shadow-md">
+                <button @click="setPomoMode('work')" class="px-5 py-2 text-xs font-mono font-bold rounded-xl transition-all" :class="pomo.mode === 'work' ? 'bg-amber-500 text-black shadow-lg' : 'text-gray-400 hover:text-white'">
+                  🔥 Work Focus (<span x-text="pomo.workMin"></span>m)
+                </button>
+                <button @click="setPomoMode('short')" class="px-5 py-2 text-xs font-mono font-bold rounded-xl transition-all" :class="pomo.mode === 'short' ? 'bg-emerald-500 text-black shadow-lg' : 'text-gray-400 hover:text-white'">
+                  ☕ Short Break (<span x-text="pomo.shortMin"></span>m)
+                </button>
+                <button @click="setPomoMode('long')" class="px-5 py-2 text-xs font-mono font-bold rounded-xl transition-all" :class="pomo.mode === 'long' ? 'bg-cyan-500 text-black shadow-lg' : 'text-gray-400 hover:text-white'">
+                  🌿 Long Break (<span x-text="pomo.longMin"></span>m)
+                </button>
+              </div>
+
+              <div class="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full border-4 border-[#22273c] bg-[#07080c] flex flex-col items-center justify-center shadow-2xl space-y-1">
+                <div class="text-5xl sm:text-6xl font-mono font-extrabold tracking-widest text-white" x-text="formatPomoDisplay()">
+                  25:00
+                </div>
+                <div class="text-xs font-mono text-gray-400 uppercase tracking-widest pt-2 flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full" :class="pomo.active ? 'bg-emerald-400 animate-ping' : 'bg-rose-500'"></span>
+                  <span x-text="pomo.active ? 'Mana Flow Active' : 'Session Paused'"></span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-4 pt-2">
+                <button @click="togglePomoTimer()" class="px-8 py-3.5 font-cinzel font-black text-sm rounded-2xl shadow-xl border transition-all flex items-center gap-3"
+                        :class="pomo.active ? 'bg-rose-950 text-rose-300 border-rose-600 hover:bg-rose-900' : 'bg-amber-500 hover:bg-amber-400 text-black border-amber-300'">
+                  <i :class="pomo.active ? 'fa-solid fa-pause text-base' : 'fa-solid fa-play text-base'"></i>
+                  <span x-text="pomo.active ? 'Pause Mana Flow' : 'Start Focus Session'"></span>
+                </button>
+                <button @click="resetPomoTimer()" class="px-5 py-3.5 bg-[#141724] hover:bg-[#1a1e30] text-gray-300 hover:text-amber-300 border border-[#23283e] rounded-2xl text-xs font-mono transition-all flex items-center gap-2">
+                  <i class="fa-solid fa-rotate-left"></i>
+                  <span>Reset</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="grimoire-card p-6 rounded-2xl space-y-6 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 border-b border-[#212538] pb-3 mb-4">
+                  <i class="fa-solid fa-sliders text-amber-400"></i>
+                  <h3 class="font-cinzel font-bold text-amber-300 text-sm">Editable Session Limits</h3>
+                </div>
+
+                <div class="space-y-4 font-mono text-xs">
+                  <div class="p-3 bg-[#121522] rounded-xl border border-[#22273c]">
+                    <label class="text-amber-300 font-bold block mb-1.5 flex items-center justify-between">
+                      <span>Work Focus Duration:</span>
+                      <span class="text-gray-400" x-text="pomo.workMin + ' Mins'"></span>
+                    </label>
+                    <input type="number" min="1" max="180" x-model.number="pomo.workMin" @change="saveData(); resetPomoTimer();" class="w-full px-3 py-2 bg-[#090a0f] border border-[#282e46] rounded-xl text-white outline-none">
+                  </div>
+
+                  <div class="p-3 bg-[#121522] rounded-xl border border-[#22273c]">
+                    <label class="text-emerald-300 font-bold block mb-1.5 flex items-center justify-between">
+                      <span>Short Break Duration:</span>
+                      <span class="text-gray-400" x-text="pomo.shortMin + ' Mins'"></span>
+                    </label>
+                    <input type="number" min="1" max="60" x-model.number="pomo.shortMin" @change="saveData(); resetPomoTimer();" class="w-full px-3 py-2 bg-[#090a0f] border border-[#282e46] rounded-xl text-white outline-none">
+                  </div>
+
+                  <div class="p-3 bg-[#121522] rounded-xl border border-[#22273c]">
+                    <label class="text-cyan-300 font-bold block mb-1.5 flex items-center justify-between">
+                      <span>Long Break Duration:</span>
+                      <span class="text-gray-400" x-text="pomo.longMin + ' Mins'"></span>
+                    </label>
+                    <input type="number" min="1" max="120" x-model.number="pomo.longMin" @change="saveData(); resetPomoTimer();" class="w-full px-3 py-2 bg-[#090a0f] border border-[#282e46] rounded-xl text-white outline-none">
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 bg-[#0a0b10] border border-[#1f2438] rounded-xl text-[11px] font-mono text-gray-400">
+                💡 <strong class="text-amber-300">Pro-Tip:</strong> Adjust these numbers at any time and click reset to instantly load your customized study intervals.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SELF IMPROVEMENT TAB -->
+        <div x-show="currentTab === 'self_improvement'" x-cloak class="space-y-6">
+          <div class="grimoire-card p-6 rounded-2xl border-l-4 border-l-emerald-500">
+            <h2 class="text-lg font-cinzel font-extrabold text-amber-300">Self Improvement & Spiritual Fortress</h2>
+            <p class="text-xs text-gray-400 mt-1">Fortify your mind, body, and soul through daily prayer, discipline, and customizable self-improvement trackers.</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grimoire-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
+              <div>
+                <div class="flex items-center justify-between border-b border-[#212538] pb-3 mb-4">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-kaaba text-amber-400 text-lg"></i>
+                    <h3 class="font-cinzel font-bold text-amber-300 text-sm">Daily 5 Prayer (Salah) Counter</h3>
+                  </div>
+                  <span class="text-xs font-mono font-bold px-2.5 py-1 bg-emerald-950 text-emerald-300 border border-emerald-800/50 rounded-full" x-text="getSalahCount() + ' / 5 Completed'"></span>
+                </div>
+
+                <div class="space-y-3">
+                  <template x-for="(prayer, name) in selfImprovement.salah" :key="name">
+                    <div @click="toggleSalah(name)" class="flex items-center justify-between p-3.5 rounded-xl bg-[#141724] border border-[#23283e] hover:border-emerald-500/40 cursor-pointer transition-all">
+                      <div class="flex items-center gap-3">
+                        <input type="checkbox" :checked="prayer.completed" class="w-5 h-5 rounded text-emerald-500 bg-[#0d0e15] border-[#2c324d]">
+                        <span class="font-cinzel font-bold text-xs uppercase tracking-wider text-white" x-text="name"></span>
+                      </div>
+                      <span class="text-xs px-2 py-0.5 rounded font-mono font-bold" :class="prayer.completed ? 'bg-emerald-950 text-emerald-400' : 'bg-[#1a1d2e] text-gray-500'" x-text="prayer.completed ? 'FULFILLED ✓' : 'PENDING'"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              <div class="flex justify-between items-center pt-3 border-t border-[#1d2133]">
+                <p class="text-[11px] text-gray-500 font-mono">"Prayer is the pillar of faith."</p>
+                <button @click="resetSalahDaily()" class="text-xs font-mono text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                  <i class="fa-solid fa-rotate-left text-[10px]"></i> Reset Daily
+                </button>
+              </div>
+            </div>
+
+            <div class="grimoire-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
+              <div>
+                <div class="flex items-center justify-between border-b border-[#212538] pb-3 mb-4">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-fire-flame-curved text-rose-500 text-lg"></i>
+                    <h3 class="font-cinzel font-bold text-amber-300 text-sm">Mana Discipline (NoFap Tracker)</h3>
+                  </div>
+                  <span class="text-xs font-mono text-rose-400 font-bold" x-text="Math.round((selfImprovement.nofapStreak / selfImprovement.nofapTarget) * 100) + '% Goal'"></span>
+                </div>
+
+                <div class="bg-[#0a0b10] p-5 rounded-2xl border border-[#1d2235] text-center space-y-3">
+                  <p class="text-xs text-gray-400 font-mono">CURRENT MANA STREAK</p>
+                  <div class="text-5xl font-mono font-extrabold text-amber-300 tracking-wider" x-text="selfImprovement.nofapStreak + ' DAYS'">0 DAYS</div>
+                  
+                  <div class="flex items-center justify-center gap-2 font-mono text-xs pt-2">
+                    <span class="text-gray-400">Target Goal:</span>
+                    <input type="number" min="1" x-model.number="selfImprovement.nofapTarget" @input="saveData()" class="w-20 px-2 py-1 bg-[#141724] border border-[#282e46] text-center rounded text-amber-300 font-bold outline-none">
+                    <span class="text-gray-400">Days</span>
+                  </div>
+
+                  <div class="w-full bg-[#151826] h-3 rounded-full overflow-hidden border border-[#23283e] mt-2">
+                    <div class="bg-gradient-to-r from-rose-600 via-amber-500 to-emerald-400 h-full rounded-full transition-all duration-500" :style="`width: ${Math.min((selfImprovement.nofapStreak / selfImprovement.nofapTarget) * 100, 100)}%`"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-3 border-t border-[#1d2133]">
+                <button @click="incrementNofap()" class="px-3 py-1.5 bg-emerald-950 text-emerald-300 border border-emerald-800/60 rounded-xl text-xs font-cinzel font-bold hover:bg-emerald-900">
+                  + Log 1 Day Clean
+                </button>
+                <button @click="resetNofap()" class="px-3 py-1.5 bg-rose-950 text-rose-300 border border-rose-800/60 rounded-xl text-xs font-cinzel font-bold hover:bg-rose-900">
+                  Reset Streak
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MISSIONS & TASKS TAB -->
+        <div x-show="currentTab === 'tasks'" x-cloak class="space-y-6">
+          <div class="flex justify-between items-center grimoire-card p-4 rounded-2xl">
+            <h2 class="font-cinzel font-bold text-amber-300 text-sm">Mission Command Center</h2>
+            <button @click="openTaskModal = true" class="px-3 py-1.5 text-xs font-cinzel font-bold bg-rose-800 hover:bg-rose-700 text-white rounded-xl">
+              + Add Mission
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <template x-for="task in tasks" :key="task.id">
+              <div class="grimoire-card p-5 rounded-2xl space-y-3 flex flex-col justify-between"
+                   :class="{
+                     'border-rose-500/50': task.priority === 'High',
+                     'border-amber-500/40': task.priority === 'Medium',
+                     'border-[#202436]': task.priority === 'Low' || !task.priority
+                   }">
+                <div>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase"
+                          :class="{
+                            'bg-rose-950 text-rose-400 border border-rose-800/60': task.priority === 'High',
+                            'bg-amber-950 text-amber-400 border border-amber-800/60': task.priority === 'Medium',
+                            'bg-emerald-950 text-emerald-400 border border-emerald-800/60': task.priority === 'Low' || !task.priority
+                          }" x-text="(task.priority || 'Low') + ' Priority'"></span>
+                    <button @click="deleteTask(task.id)" class="text-gray-500 hover:text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                  </div>
+                  <h3 class="font-bold text-sm text-white font-mono" x-text="task.title"></h3>
+                  <p class="text-xs text-gray-400 mt-1" x-text="task.description"></p>
+                </div>
+                <div class="pt-2 border-t border-[#1f2438] flex items-center justify-between">
+                  <span class="text-[10px] font-mono text-gray-500" x-text="task.status"></span>
+                  <button @click="toggleTaskStatus(task.id)" class="px-3 py-1 text-xs font-cinzel font-bold rounded-xl border border-[#2a3048] hover:border-amber-500/40 transition-all text-amber-300 bg-[#121522]">
+                    Toggle Status
+                  </button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- SQUAD TAB -->
+        <div x-show="currentTab === 'squad'" x-cloak class="space-y-6">
+          <div class="grimoire-card p-6 rounded-2xl border-l-4 border-l-rose-600 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-cinzel font-extrabold text-amber-300">Magic Knight Squad Companions & Grimoire Legends</h2>
+              <p class="text-xs text-gray-400 mt-1 max-w-2xl">
+                Surpass your limits alongside legendary Magic Knights. Add, edit, or customize your squad companions.
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <button @click="openCompanionModal()" class="px-4 py-2 text-xs font-cinzel font-bold bg-rose-700 hover:bg-rose-600 text-white rounded-xl shadow-lg border border-rose-500/40 transition-all shrink-0 flex items-center gap-1.5">
+                <i class="fa-solid fa-user-plus text-xs"></i>
+                <span>Add Companion</span>
+              </button>
+              <button @click="resetDefaultCharacters()" class="px-3 py-2 text-xs font-cinzel font-bold bg-[#171a28] hover:bg-[#21263b] text-amber-300 rounded-xl border border-[#2b314d] transition-all shrink-0" title="Reset Default Knights">
+                <i class="fa-solid fa-rotate text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="char in characters" :key="char.id">
+              <div class="grimoire-card p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:border-amber-500/50 relative group">
+                <div class="absolute top-3 right-3 flex items-center gap-1.5 z-10 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button @click="openCompanionModal(char)" class="w-7 h-7 rounded-lg bg-[#181c2e]/90 text-amber-400 hover:bg-amber-500 hover:text-black flex items-center justify-center border border-amber-500/40 transition-all" title="Edit">
+                    <i class="fa-solid fa-pen text-xs"></i>
+                  </button>
+                  <button @click="deleteCompanion(char.id)" class="w-7 h-7 rounded-lg bg-[#181c2e]/90 text-rose-400 hover:bg-rose-600 hover:text-white flex items-center justify-center border border-rose-500/40 transition-all" title="Delete">
+                    <i class="fa-solid fa-trash text-xs"></i>
+                  </button>
+                </div>
+
+                <div class="flex gap-4 items-center">
+                  <div class="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-amber-400/50 shadow-md shrink-0 bg-[#090a0f] flex items-center justify-center">
+                    <template x-if="char.avatar">
+                      <img :src="char.avatar" :alt="char.name" class="w-full h-full object-cover" @error="char.avatar = ''">
+                    </template>
+                    <template x-if="!char.avatar">
+                      <div class="w-full h-full bg-gradient-to-br from-rose-900 to-amber-900 flex items-center justify-center text-amber-300 font-cinzel font-black text-xl">
+                        <span x-text="char.name ? char.name.charAt(0).toUpperCase() : 'M'"></span>
+                      </div>
+                    </template>
+                  </div>
+
+                  <div class="overflow-hidden pr-12">
+                    <h3 class="font-cinzel font-bold text-sm text-white truncate" x-text="char.name"></h3>
+                    <p class="text-[11px] text-rose-400 font-mono font-semibold truncate" x-text="char.magic || 'Anti Magic'"></p>
+                    <span class="inline-block mt-1 px-2 py-0.5 text-[9px] font-mono rounded bg-rose-950/80 text-rose-300 border border-rose-800/40 truncate" x-text="char.squad || 'Black Bulls'"></span>
+                  </div>
+                </div>
+
+                <p class="text-xs text-gray-300 italic font-serif bg-[#0a0b10] p-3 rounded-xl border border-[#1d2235] line-clamp-3">
+                  "<span x-text="char.quote || 'Surpass your limits!'"></span>"
+                </p>
+
+                <div class="flex items-center justify-between pt-2 border-t border-[#1d2133]">
+                  <span class="text-[10px] text-amber-400 font-mono truncate max-w-[120px]" x-text="char.rank || 'Magic Knight'"></span>
+                  <button @click="setAvatarFromCharacter(char)" class="px-3 py-1.5 text-xs font-cinzel font-bold bg-[#171a28] hover:bg-[#22283d] text-amber-300 border border-[#2b324c] rounded-xl transition-all">
+                    Set Profile Avatar
+                  </button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- GALLERY MODAL -->
+  <div x-show="galleryModalOpen" x-cloak class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="grimoire-card p-6 rounded-2xl max-w-md w-full space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-cinzel font-bold text-amber-300 text-sm" x-text="editingGalleryId ? 'Edit Visual Card' : 'Add Black Clover Image Card'"></h3>
+        <button @click="galleryModalOpen = false" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <input type="text" x-model="galleryForm.title" placeholder="Card Title (e.g. Asta's Devil Union)" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none">
+      <input type="text" x-model="galleryForm.tag" placeholder="Tag / Category (e.g. Motivation, Wallpaper, Manga)" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none">
+      
+      <div class="space-y-2">
+        <input type="text" x-model="galleryForm.imageUrl" placeholder="Image URL (e.g. https://...)" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] text-gray-500 font-mono">OR Upload Image:</span>
+          <input type="file" @change="handleFileUpload($event)" accept="image/*" class="text-[10px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-[#1c2135] file:text-amber-300 file:text-[10px]">
+        </div>
+      </div>
+
+      <textarea x-model="galleryForm.caption" placeholder="Text / Quote / Note..." class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none h-24"></textarea>
+
+      <button @click="saveGalleryItem()" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-rose-700 hover:from-amber-500 hover:to-rose-600 text-white font-cinzel font-bold text-xs rounded-xl transition-all">
+        Save Visual Card
+      </button>
+    </div>
+  </div>
+
+  <!-- NEW MISSION MODAL -->
+  <div x-show="openTaskModal" x-cloak class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="grimoire-card p-6 rounded-2xl max-w-md w-full space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-cinzel font-bold text-amber-300 text-sm">New Mission</h3>
+        <button @click="openTaskModal = false" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <input type="text" x-model="newTask.title" placeholder="Mission Title (e.g. Biology Ch-09)" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none">
+      
+      <div>
+        <label class="text-[11px] font-mono text-gray-400 block mb-1.5">Mission Priority Level:</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" @click="newTask.priority = 'High'" 
+                  class="py-2 text-xs font-mono font-bold rounded-xl border transition-all"
+                  :class="newTask.priority === 'High' ? 'bg-rose-950 text-rose-300 border-rose-500' : 'bg-[#090a0f] text-gray-400 border-[#23283e] hover:border-gray-600'">
+            🔴 High
+          </button>
+          <button type="button" @click="newTask.priority = 'Medium'" 
+                  class="py-2 text-xs font-mono font-bold rounded-xl border transition-all"
+                  :class="newTask.priority === 'Medium' ? 'bg-amber-950 text-amber-300 border-amber-500' : 'bg-[#090a0f] text-gray-400 border-[#23283e] hover:border-gray-600'">
+            🟡 Medium
+          </button>
+          <button type="button" @click="newTask.priority = 'Low'" 
+                  class="py-2 text-xs font-mono font-bold rounded-xl border transition-all"
+                  :class="newTask.priority === 'Low' ? 'bg-emerald-950 text-emerald-300 border-emerald-500' : 'bg-[#090a0f] text-gray-400 border-[#23283e] hover:border-gray-600'">
+            🟢 Low
+          </button>
+        </div>
+      </div>
+
+      <textarea x-model="newTask.description" placeholder="Description / Instructions..." class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none h-20"></textarea>
+
+      <button @click="addTask()" class="w-full py-2.5 bg-rose-800 hover:bg-rose-700 text-white font-cinzel font-bold text-xs rounded-xl transition-all">
+        Create Mission
+      </button>
+    </div>
+  </div>
+
+  <!-- COMPANION MODAL -->
+  <div x-show="companionModalOpen" x-cloak class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="grimoire-card p-6 rounded-2xl max-w-md w-full space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-cinzel font-bold text-amber-300 text-sm" x-text="editingCompanionId ? 'Edit Squad Companion' : 'Add Squad Companion'"></h3>
+        <button @click="companionModalOpen = false" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <input type="text" x-model="companionForm.name" placeholder="Name (e.g. Asta)" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none">
+      <input type="text" x-model="companionForm.magic" placeholder="Magic Type (e.g. Anti Magic)" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none">
+      <input type="text" x-model="companionForm.squad" placeholder="Squad (e.g. Black Bulls)" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none">
+      <input type="text" x-model="companionForm.rank" placeholder="Rank (e.g. Senior Magic Knight)" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none">
+      <input type="text" x-model="companionForm.avatar" placeholder="Avatar Image URL" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none">
+      <textarea x-model="companionForm.quote" placeholder="Motto / Quote" class="w-full px-3 py-2 bg-[#090a0f] border border-[#23283e] rounded-xl text-xs text-white outline-none h-20"></textarea>
+      <button @click="saveCompanion()" class="w-full py-2.5 bg-rose-800 hover:bg-rose-700 text-white font-cinzel font-bold text-xs rounded-xl transition-all">
+        Save Companion
+      </button>
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    function blackCloverApp() {
+      return {
+        sidebarOpen: false,
+        openTaskModal: false,
+        companionModalOpen: false,
+        galleryModalOpen: false,
+        editingCompanionId: null,
+        editingGalleryId: null,
+        currentTab: 'dashboard',
+        totalFocusSeconds: 0,
+        bannerImage: '',
+        particlesActive: true,
+        
+        studyLogs: {}, // Stores { 'YYYY-MM-DD': seconds }
+
+        pomo: {
+          active: false,
+          mode: 'work',
+          secondsLeft: 25 * 60,
+          workMin: 25,
+          shortMin: 5,
+          longMin: 15,
+          interval: null
+        },
+
+        navItems: [
+          { id: 'dashboard', label: 'Command Hub', faIcon: 'fa-solid fa-house' },
+          { id: 'pomodoro', label: 'Mana Pomodoro', faIcon: 'fa-solid fa-hourglass-half' },
+          { id: 'analytics', label: 'Study Analytics', faIcon: 'fa-solid fa-chart-line' },
+          { id: 'self_improvement', label: 'Self Improvement', faIcon: 'fa-solid fa-person-rays' },
+          { id: 'squad', label: 'Squad Knights', faIcon: 'fa-solid fa-user-shield' },
+          { id: 'tasks', label: 'Missions & Tasks', faIcon: 'fa-solid fa-list-check' },
+        ],
+
+        newTask: { title: '', description: '', priority: 'Medium' },
+        companionForm: { name: '', magic: '', squad: '', rank: '', quote: '', avatar: '' },
+        galleryForm: { title: '', tag: '', imageUrl: '', caption: '' },
+
+        profile: {
+          name: 'Arian',
+          squad: 'Black Bulls Vice Captain',
+          role: 'Full-Stack Magic Architect',
+          avatar: ''
+        },
+
+        tasks: [
+          { id: 1791879306207, title: "BIOLOGY- CHAPTER 09 FULL CLASS", description: "uDVASH oNESHOT CLASS", priority: "High", status: "Pending" },
+          { id: 1791879323660, title: "Biology Chapter 09- mcq practice", description: "From guide", priority: "Medium", status: "Pending" },
+          { id: 1791879362333, title: "Physics- Geomterical Optics", description: "Class-6", priority: "High", status: "Pending" }
+        ],
+
+        dailyGoals: [
+          { id: 1791879268075, title: "cOMPLETE ALL THE TASKS", category: "Training", completed: false }
+        ],
+
+        gallery: [
+          {
+            id: 1,
+            title: "Surpass Your Limits",
+            tag: "Motivation",
+            imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_xS_O2vWn1pUq0z1v_mG2yC0fQ&s",
+            caption: "Right here, right now! Never give up, no matter how hard the path becomes.",
+            date: "Default Card"
+          },
+          {
+            id: 2,
+            title: "Wizard King's Resolve",
+            tag: "Manga",
+            imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQW9M7k09I1q0w3W7Y4w&s",
+            caption: "Protecting the kingdom means pushing forward every single day.",
+            date: "Default Card"
+          }
+        ],
+
+        characters: [
+          { id: 1, name: "Asta", magic: "Anti Magic", squad: "Black Bulls", rank: "Junior Magic Knight 1st Class", quote: "My magic is not giving up!", avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_xS_O2vWn1pUq0z1v_mG2yC0fQ&s" },
+          { id: 2, name: "Yuno Grinberryall", magic: "Wind & Star Magic", squad: "Golden Dawn", rank: "Vice-Captain", quote: "I will become the Wizard King.", avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkW4C4zL-X-y8G_e3N0-J0s&s" },
+          { id: 3, name: "Yami Sukehiro", magic: "Dark Magic", squad: "Black Bulls", rank: "Captain", quote: "Surpass your limits. Right here, right now.", avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQW9M7k09I1q0w3W7Y4w&s" },
+          { id: 4, name: "Noelle Silva", magic: "Water Magic", squad: "Black Bulls", rank: "Senior Magic Knight 1st Class", quote: "I am royalty!", avatar: "" },
+          { id: 5, name: "Julius Novachrono", magic: "Time Magic", squad: "Magic Knights", rank: "Wizard King", quote: "Magic is about discovering new possibilities.", avatar: "" },
+          { id: 6, name: "Fuegoleon Vermillion", magic: "Fire Magic", squad: "Crimson Lion", rank: "Captain", quote: "Being weak is nothing to be ashamed of... Staying weak is!", avatar: "" },
+          { id: 7, name: "Mereoleona Vermillion", magic: "Fire Magic", squad: "Crimson Lion", rank: "Former Captain", quote: "Nothing is impossible for those who burn with passion!", avatar: "" },
+          { id: 8, name: "William Vangeance", magic: "World Tree Magic", squad: "Golden Dawn", rank: "Captain", quote: "I fight to protect peace.", avatar: "" },
+          { id: 9, name: "Jack the Ripper", magic: "Slash Magic", squad: "Green Mantis", rank: "Captain", quote: "I'll slice through anything!", avatar: "" }
+        ],
+
+        selfImprovement: {
+          nofapStreak: 0,
+          nofapTarget: 90,
+          salah: {
+            Fajr: { completed: false, time: 'Dawn' },
+            Dhuhr: { completed: false, time: 'Noon' },
+            Asr: { completed: false, time: 'Afternoon' },
+            Maghrib: { completed: false, time: 'Sunset' },
+            Isha: { completed: false, time: 'Night' }
+          }
+        },
+
+        initApp() {
+          const savedData = localStorage.getItem('blackCloverOSData');
+          if (savedData) {
+            try {
+              const parsed = JSON.parse(savedData);
+              this.totalFocusSeconds = parsed.totalFocusSeconds || 0;
+              this.bannerImage = parsed.bannerImage || '';
+              this.tasks = (parsed.tasks && parsed.tasks.length > 0) ? parsed.tasks : this.tasks;
+              this.dailyGoals = (parsed.dailyGoals && parsed.dailyGoals.length > 0) ? parsed.dailyGoals : this.dailyGoals;
+              this.characters = (parsed.characters && parsed.characters.length > 0) ? parsed.characters : this.characters;
+              this.gallery = (parsed.gallery && parsed.gallery.length > 0) ? parsed.gallery : this.gallery;
+              this.selfImprovement = parsed.selfImprovement || this.selfImprovement;
+              this.profile = parsed.profile || this.profile;
+              this.studyLogs = parsed.studyLogs || {};
+              if (parsed.pomoSettings) {
+                this.pomo.workMin = parsed.pomoSettings.workMin || 25;
+                this.pomo.shortMin = parsed.pomoSettings.shortMin || 5;
+                this.pomo.longMin = parsed.pomoSettings.longMin || 15;
+                this.pomo.secondsLeft = this.pomo.workMin * 60;
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+          }
+
+          this.initParticleCanvas();
+        },
+
+        saveData() {
+          localStorage.setItem('blackCloverOSData', JSON.stringify({
+            totalFocusSeconds: this.totalFocusSeconds,
+            bannerImage: this.bannerImage,
+            tasks: this.tasks,
+            dailyGoals: this.dailyGoals,
+            characters: this.characters,
+            gallery: this.gallery,
+            selfImprovement: this.selfImprovement,
+            profile: this.profile,
+            studyLogs: this.studyLogs,
+            pomoSettings: {
+              workMin: this.pomo.workMin,
+              shortMin: this.pomo.shortMin,
+              longMin: this.pomo.longMin
+            }
+          }));
+        },
+
+        // STUDY ANALYTICS HELPERS
+        getTodayDateKey() {
+          const d = new Date();
+          return d.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+        },
+
+        logStudySeconds(secs) {
+          const today = this.getTodayDateKey();
+          if (!this.studyLogs[today]) {
+            this.studyLogs[today] = 0;
+          }
+          this.studyLogs[today] += secs;
+        },
+
+        getWeeklyStudyHours() {
+          const now = new Date();
+          // Get start of current week (Monday)
+          const dayOfWeek = now.getDay() || 7;
+          const monday = new Date(now);
+          monday.setHours(0, 0, 0, 0);
+          monday.setDate(now.getDate() - dayOfWeek + 1);
+
+          let totalSecs = 0;
+          Object.keys(this.studyLogs).forEach(dateStr => {
+            const d = new Date(dateStr);
+            if (d >= monday && d <= now) {
+              totalSecs += this.studyLogs[dateStr];
+            }
+          });
+          return (totalSecs / 3600).toFixed(1);
+        },
+
+        getMonthlyStudyHours() {
+          const now = new Date();
+          const currentYear = now.getFullYear();
+          const currentMonth = now.getMonth();
+
+          let totalSecs = 0;
+          Object.keys(this.studyLogs).forEach(dateStr => {
+            const d = new Date(dateStr);
+            if (d.getFullYear() === currentYear && d.getMonth() === currentMonth) {
+              totalSecs += this.studyLogs[dateStr];
+            }
+          });
+          return (totalSecs / 3600).toFixed(1);
+        },
+
+        getCurrentMonthName() {
+          return new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+        },
+
+        getRecentDailyLogs() {
+          const keys = Object.keys(this.studyLogs).sort().reverse();
+          return keys.slice(0, 30).map(date => ({
+            date: date,
+            seconds: this.studyLogs[date]
+          }));
+        },
+
+        formatDateShort(dateStr) {
+          const parts = dateStr.split('-');
+          return `${parts[2]}/${parts[1]}`;
+        },
+
+        formatStudyDuration(secs) {
+          const h = Math.floor(secs / 3600);
+          const m = Math.floor((secs % 3600) / 60);
+          return `${h} hours ${m} minutes`;
+        },
+
+        toggleParticles() {
+          this.particlesActive = !this.particlesActive;
+          const canvas = document.getElementById('bg-particles-canvas');
+          if (canvas) {
+            canvas.style.display = this.particlesActive ? 'block' : 'none';
+          }
+        },
+
+        initParticleCanvas() {
+          const canvas = document.getElementById('bg-particles-canvas');
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+
+          let width = canvas.width = window.innerWidth;
+          let height = canvas.height = window.innerHeight;
+
+          window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+          });
+
+          const particles = [];
+          const numParticles = 45;
+          const particleTypes = ['mana', 'grimoire', 'sword'];
+          const colors = ['rgba(255, 183, 3, ', 'rgba(230, 57, 70, ', 'rgba(42, 157, 143, ', 'rgba(168, 85, 247, '];
+
+          class Particle {
+            constructor() {
+              this.reset();
+            }
+            reset() {
+              this.x = Math.random() * width;
+              this.y = height + Math.random() * 100;
+              this.type = particleTypes[Math.floor(Math.random() * particleTypes.length)];
+              this.size = this.type === 'mana' ? Math.random() * 3 + 1.5 : Math.random() * 12 + 10;
+              this.speedY = -(Math.random() * 0.8 + 0.3);
+              this.speedX = (Math.random() - 0.5) * 0.5;
+              this.colorBase = colors[Math.floor(Math.random() * colors.length)];
+              this.alpha = Math.random() * 0.5 + 0.2;
+              this.rotation = Math.random() * Math.PI * 2;
+              this.rotSpeed = (Math.random() - 0.5) * 0.02;
+            }
+            update() {
+              this.y += this.speedY;
+              this.x += this.speedX + Math.sin(this.y * 0.01) * 0.3;
+              this.rotation += this.rotSpeed;
+              if (this.y < -50 || this.x < -50 || this.x > width + 50) {
+                this.reset();
+              }
+            }
+            draw() {
+              ctx.save();
+              ctx.translate(this.x, this.y);
+              ctx.rotate(this.rotation);
+              if (this.type === 'mana') {
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.colorBase + this.alpha + ')';
+                ctx.shadowColor = this.colorBase + '0.8)';
+                ctx.shadowBlur = 12;
+                ctx.fill();
+              } else if (this.type === 'grimoire') {
+                ctx.fillStyle = this.colorBase + (this.alpha * 0.7) + ')';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                const w = this.size, h = this.size * 1.3;
+                ctx.fillRect(-w/2, -h/2, w, h);
+                ctx.strokeRect(-w/2, -h/2, w, h);
+                ctx.fillStyle = '#ffb703';
+                ctx.beginPath();
+                ctx.arc(0, 0, w * 0.2, 0, Math.PI * 2);
+                ctx.fill();
+              } else if (this.type === 'sword') {
+                ctx.strokeStyle = 'rgba(230, 57, 70, ' + (this.alpha * 0.8) + ')';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size);
+                ctx.lineTo(0, this.size);
+                ctx.moveTo(-this.size * 0.3, -this.size * 0.3);
+                ctx.lineTo(this.size * 0.3, -this.size * 0.3);
+                ctx.stroke();
+              }
+              ctx.restore();
+            }
+          }
+
+          for (let i = 0; i < numParticles; i++) {
+            const p = new Particle();
+            p.y = Math.random() * height;
+            particles.push(p);
+          }
+
+          window.addEventListener('mousemove', (e) => {
+            if (!this.particlesActive) return;
+            if (Math.random() < 0.3) {
+              const p = new Particle();
+              p.x = e.clientX;
+              p.y = e.clientY;
+              p.type = 'mana';
+              p.size = Math.random() * 4 + 2;
+              p.speedY = -(Math.random() * 1.5 + 0.5);
+              particles.push(p);
+              if (particles.length > 70) particles.shift();
+            }
+          });
+
+          const animate = () => {
+            ctx.clearRect(0, 0, width, height);
+            if (this.particlesActive) {
+              for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+              }
+            }
+            requestAnimationFrame(animate);
+          };
+          animate();
+        },
+
+        setPomoMode(mode) {
+          if (this.pomo.active) this.togglePomoTimer();
+          this.pomo.mode = mode;
+          const mins = mode === 'work' ? this.pomo.workMin : (mode === 'short' ? this.pomo.shortMin : this.pomo.longMin);
+          this.pomo.secondsLeft = mins * 60;
+        },
+
+        togglePomoTimer() {
+          if (this.pomo.active) {
+            clearInterval(this.pomo.interval);
+            this.pomo.active = false;
+          } else {
+            this.pomo.active = true;
+            this.pomo.interval = setInterval(() => {
+              if (this.pomo.secondsLeft > 0) {
+                this.pomo.secondsLeft--;
+                if (this.pomo.mode === 'work') {
+                  this.totalFocusSeconds++;
+                  this.logStudySeconds(1);
+                }
+                this.saveData();
+              } else {
+                clearInterval(this.pomo.interval);
+                this.pomo.active = false;
+                alert(`Pomodoro ${this.pomo.mode.toUpperCase()} session completed!`);
+                this.setPomoMode(this.pomo.mode === 'work' ? 'short' : 'work');
+              }
+            }, 1000);
+          }
+        },
+
+        resetPomoTimer() {
+          if (this.pomo.active) clearInterval(this.pomo.interval);
+          this.pomo.active = false;
+          const mins = this.pomo.mode === 'work' ? this.pomo.workMin : (this.pomo.mode === 'short' ? this.pomo.shortMin : this.pomo.longMin);
+          this.pomo.secondsLeft = mins * 60;
+        },
+
+        formatPomoDisplay() {
+          const m = Math.floor(this.pomo.secondsLeft / 60);
+          const s = this.pomo.secondsLeft % 60;
+          return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        },
+
+        formatTotalTime(totalSeconds) {
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          return `${hours}h ${minutes}m`;
+        },
+
+        handleBannerUpload(event) {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this.bannerImage = e.target.result;
+              this.saveData();
+            };
+            reader.readAsDataURL(file);
+          }
+        },
+
+        openGalleryModal(item = null) {
+          if (item) {
+            this.editingGalleryId = item.id;
+            this.galleryForm = { ...item };
+          } else {
+            this.editingGalleryId = null;
+            this.galleryForm = { title: '', tag: '', imageUrl: '', caption: '' };
+          }
+          this.galleryModalOpen = true;
+        },
+
+        handleFileUpload(event) {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this.galleryForm.imageUrl = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        },
+
+        saveGalleryItem() {
+          if (!this.galleryForm.title && !this.galleryForm.imageUrl) return;
+          const currentDate = new Date().toLocaleDateString();
+          if (this.editingGalleryId) {
+            const idx = this.gallery.findIndex(g => g.id === this.editingGalleryId);
+            if (idx !== -1) this.gallery[idx] = { ...this.galleryForm, id: this.editingGalleryId, date: currentDate };
+          } else {
+            this.gallery.push({ ...this.galleryForm, id: Date.now(), date: currentDate });
+          }
+          this.galleryModalOpen = false;
+          this.saveData();
+        },
+
+        deleteGalleryItem(id) {
+          this.gallery = this.gallery.filter(g => g.id !== id);
+          this.saveData();
+        },
+
+        addTask() {
+          if (!this.newTask.title) return;
+          this.tasks.push({
+            id: Date.now(),
+            title: this.newTask.title,
+            description: this.newTask.description,
+            priority: this.newTask.priority || 'Medium',
+            status: 'Pending'
+          });
+          this.newTask = { title: '', description: '', priority: 'Medium' };
+          this.openTaskModal = false;
+          this.saveData();
+        },
+
+        deleteTask(id) {
+          this.tasks = this.tasks.filter(t => t.id !== id);
+          this.saveData();
+        },
+
+        toggleTaskStatus(id) {
+          const task = this.tasks.find(t => t.id === id);
+          if (task) {
+            task.status = task.status === 'Pending' ? 'Completed' : 'Pending';
+            this.saveData();
+          }
+        },
+
+        openCompanionModal(char = null) {
+          if (char) {
+            this.editingCompanionId = char.id;
+            this.companionForm = { ...char };
+          } else {
+            this.editingCompanionId = null;
+            this.companionForm = { name: '', magic: '', squad: '', rank: '', quote: '', avatar: '' };
+          }
+          this.companionModalOpen = true;
+        },
+
+        saveCompanion() {
+          if (!this.companionForm.name) return;
+          if (this.editingCompanionId) {
+            const idx = this.characters.findIndex(c => c.id === this.editingCompanionId);
+            if (idx !== -1) this.characters[idx] = { ...this.companionForm, id: this.editingCompanionId };
+          } else {
+            this.characters.push({ ...this.companionForm, id: Date.now() });
+          }
+          this.companionModalOpen = false;
+          this.saveData();
+        },
+
+        deleteCompanion(id) {
+          this.characters = this.characters.filter(c => c.id !== id);
+          this.saveData();
+        },
+
+        setAvatarFromCharacter(char) {
+          if (char.avatar) {
+            this.profile.avatar = char.avatar;
+            this.saveData();
+          }
+        },
+
+        resetDefaultCharacters() {
+          localStorage.removeItem('blackCloverOSData');
+          window.location.reload();
+        },
+
+        getCompletionRate() {
+          if (this.tasks.length === 0) return 0;
+          const completed = this.tasks.filter(t => t.status === 'Completed').length;
+          return Math.round((completed / this.tasks.length) * 100);
+        },
+
+        getSalahCount() {
+          return Object.values(this.selfImprovement.salah).filter(p => p.completed).length;
+        },
+
+        getTodayGoalProgress() {
+          if (this.dailyGoals.length === 0) return 0;
+          const done = this.dailyGoals.filter(g => g.completed).length;
+          return Math.round((done / this.dailyGoals.length) * 100);
+        },
+
+        toggleGoal(id) {
+          const goal = this.dailyGoals.find(g => g.id === id);
+          if (goal) {
+            goal.completed = !goal.completed;
+            this.saveData();
+          }
+        },
+
+        toggleSalah(name) {
+          if (this.selfImprovement.salah[name]) {
+            this.selfImprovement.salah[name].completed = !this.selfImprovement.salah[name].completed;
+            this.saveData();
+          }
+        },
+
+        resetSalahDaily() {
+          Object.keys(this.selfImprovement.salah).forEach(key => {
+            this.selfImprovement.salah[key].completed = false;
+          });
+          this.saveData();
+        },
+
+        incrementNofap() {
+          this.selfImprovement.nofapStreak++;
+          this.saveData();
+        },
+
+        resetNofap() {
+          this.selfImprovement.nofapStreak = 0;
+          this.saveData();
+        }
+      }
+    }
+  </script>
+</body>
+</html>
